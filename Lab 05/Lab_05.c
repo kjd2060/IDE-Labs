@@ -1,6 +1,6 @@
 /*
- * File:        uart.c
- * Purpose:     Provide UART routines for serial IO
+ * File:        Lab05.c
+ * Purpose:     Does the lab 5 stuff
  *
  * Notes:		
  *
