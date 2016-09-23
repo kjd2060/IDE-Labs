@@ -56,13 +56,18 @@ void initPDB(void){
 	
 	// Set continuous mode, prescaler of 128, multiplication factor of 20,
 	// software triggering, and PDB enabled
-
-	
+	PDB0_SC |= (1<<1); //Enable coninuous mode
+	PDB0_SC |= (1<<14) | (1<<13) | (1<<12); //Set prescaler of 128
+	PDB0_SC |= (1<<3); //Set multiplication of factor 20
+	PDB0_SC &= ~(1<<2); //Set multiplication factor of 20
+	PDB0_SS |= (1<<11) | (1<<10) | (1<<9) | (1<<8); //Sets trigger to be the software trigger
+	PDB0_SC |= (1<<7); // Enables PDB
 	
 	//Set the mod field to get a 1 second period.
 	//There is a division by 2 to make the LED blinking period 1 second.
 	//This translates to two mod counts in one second (one for on, one for off)
-
+	PDB0_MOD |= (1<<1); //Sets the period to 2 (1 second)
+	PDB0_MOD &= ~(1<<0); //Sets the period to 2 (1 second)
 	
 	//Configure the Interrupt Delay register.
 	PDB0_IDLY = 10;
@@ -71,7 +76,7 @@ void initPDB(void){
     NVIC_EnableIRQ(PDB0_IRQn);
 	
 	//Enable LDOK to have PDB0_SC register changes loaded. 
-
+	PDB0_SC |= (1<<0); // Loaded the MOD and IDLY changes into PDB0_SC
 	
 	return;
 }
