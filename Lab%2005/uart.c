@@ -7,9 +7,10 @@
  */
 
 #include "MK64F12.h"
+#ifndef UART_CONSTANTS
 #define BAUD_RATE 9600      //default baud rate 
 #define SYS_CLOCK 20485760 //default system clock (see DEFAULT_SYSTEM_CLOCK  in system_MK64F12.c)
-
+#endif
 void uart_put(char *ptr_str);
 void uart_init(void);
 uint8_t uart_getchar(void);
