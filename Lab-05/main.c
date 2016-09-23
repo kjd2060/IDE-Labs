@@ -66,8 +66,8 @@ void initPDB(void){
 	//Set the mod field to get a 1 second period.
 	//There is a division by 2 to make the LED blinking period 1 second.
 	//This translates to two mod counts in one second (one for on, one for off)
-	PDB0_MOD |= (1<<1); //Sets the period to 2 (1 second)
-	PDB0_MOD &= ~(1<<0); //Sets the period to 2 (1 second)
+	PDB0_MOD |= (1<<1);
+	PDB0_MOD &= ~(1<<0);
 	
 	//Configure the Interrupt Delay register.
 	PDB0_IDLY = 10;
@@ -76,7 +76,7 @@ void initPDB(void){
     NVIC_EnableIRQ(PDB0_IRQn);
 	
 	//Enable LDOK to have PDB0_SC register changes loaded. 
-	PDB0_SC |= (1<<0); // Loaded the MOD and IDLY changes into PDB0_SC
+	PDB0_SC |= (1<<0);
 	
 	return;
 }
@@ -87,13 +87,13 @@ void initFTM(void){
 	
 	
 	//turn off FTM Mode to  write protection;
-	
+	FTM0_MODE &= ~(1<<2);
 	
 	//divide the input clock down by 128,  
-
+	FTM0_SC |= (1<<2) | (1<<1) | (1<<0);
 	
 	//reset the counter to zero
-	
+	FTM0_CNT = 0;
 	
 	//Set the overflow rate
 	//(Sysclock/128)- clock after prescaler
@@ -103,7 +103,8 @@ void initFTM(void){
 	FTM0->MOD = (DEFAULT_SYSTEM_CLOCK/(1<<7))/1000;
 	
 	//Select the System Clock 
-	
+	FTM0_SC &= ~(1<<4);
+	FTM0_SC |= (1<<3);
 	
 	//Enable the interrupt mask. Timer overflow Interrupt enable
     NVIC_EnableIRQ(FTM0_IRQn);
