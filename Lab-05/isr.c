@@ -22,6 +22,7 @@
 #endif
 
 int gCount = 0;
+int gLocalVar = 0;
 
 int Switch2_Down(void){
     if((GPIOC_PDIR * (gSwitch2)) == 0){
@@ -48,7 +49,7 @@ void FTM0_IRQHandler(void){ //For FTM timer
     // clear interrupt in register FTM0_SC
 	FTM0_SC &= FTM_IF_MASK;
     // if switch2 has been pressed, increment the counter var
-    if(Switch2_Down() == 1){
+    if(gLocalVar == 1){
         gCount += 1;
     }
     // otherwise do nothing
@@ -77,15 +78,34 @@ void PORTA_IRQHandler(void){ //For switch 3
 	
 void PORTC_IRQHandler(void){ //For switch 2
 	
+    char* convertedTimer = (char*)FTM0_CNT;
     // clear the interrupt
-    // if sw2 was being pressed, set local var to
-    // affect the timer2 function, reset the FlexTimer,
-    // reset the timer counter, turn on blue LED while button
-    // pressed
+    PORTC_PCR6 |= PORT_IF_MASK;
     
+    // if sw2 was being pressed
+    if(Switch2_Down() == 1)
+    {
+        // set local var to affect the timer2 function
+        gLocalVar = 1;
+        // reset flex timer
+        FTM0_CNT = 0x0;
+        // reset timer counter
+        gCount = 0;
+        // turn on blue LED while button pressed
+        GPIOB_PCOR = gBlue;
+        
+    }
     // otherwise, reset local variable to affect the timer2 function
-    // turn off the blue LED while button is up
-    // print the result as 'Button held for XX ms'
-	
+    else
+    {
+        gLocalVar = 0; 
+        // turn off the blue LED while button is up
+        GPIOB_PDOR = gBlue;
+        convertedTimer = (char*)FTM0_CNT;
+        // print the result as 'Button held for XX ms'
+        printf("Button held for");
+        printf(convertedTimer);
+        printf(" ms\n");
+    } 
 	return;
 }
