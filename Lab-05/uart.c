@@ -7,14 +7,13 @@
  */
 
 #include "MK64F12.h"
+#include "uart.h"
+
 #ifndef UART_CONSTANTS
 #define BAUD_RATE 9600      //default baud rate 
 #define SYS_CLOCK 20485760 //default system clock (see DEFAULT_SYSTEM_CLOCK  in system_MK64F12.c)
 #endif
-void uart_put(char *ptr_str);
-void uart_init(void);
-uint8_t uart_getchar(void);
-void uart_putchar(char ch);
+
 
 void uart_init()
 {
@@ -39,7 +38,7 @@ void uart_init()
 	//Select default transmission/reception settings for serial communication of UART by clearing the control register 1
 	UART0_C1 = 0x00;
 
-	//UART Baud rate is calculated by: baud rate = UART module clock / (16 × (SBR[12:0] + BRFD))
+	//UART Baud rate is calculated by: baud rate = UART module clock / (16 Ã— (SBR[12:0] + BRFD))
 	//13 bits of SBR are shared by the 8 bits of UART3_BDL and the lower 5 bits of UART3_BDH 
 	//BRFD is dependent on BRFA, refer Table 52-234 in K64 reference manual
 	//BRFA is defined by the lower 4 bits of control register, UART0_C4 
@@ -89,4 +88,7 @@ void uart_putchar(char ch)
 
 void uart_put(char *ptr_str){
 	/*use putchar to print string*/
+    while(*ptr_str){
+        uart_putchar(*ptr_str++);
+    }
 }
