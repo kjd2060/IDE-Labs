@@ -8,9 +8,10 @@
 */
 
 #include "MK64F12.h"
-#include "uart_ftdi.h"
+//#include "uart_ftdi.h"
 #include "isr.h"
 #include <stdio.h>
+#include "uart.h"
 
 #ifndef UART_CONSTANTS
 #define BAUD_RATE 9600      //default baud rate
@@ -38,12 +39,16 @@ void initInterrupts(void);
 
 int main(void){
 	//initializations
+    uart_init(); // assume this is good
+    uart_put("Starting the thing\n\r");
 	initPDB();
+    uart_put("PDB init successful\n\r");
 	initGPIO();
+    uart_put("GPIO init successful\n\r");
 	initFTM();
-	uart_init();
+	uart_put("FTM init successful\n\r");
 	initInterrupts();
-	
+	uart_put("Interrupt inits successful\n\r");
 	for(;;){
 		//To infinity and beyond
 	}
@@ -60,7 +65,7 @@ void initPDB(void){
 	PDB0_SC |= (1<<14) | (1<<13) | (1<<12); //Set prescaler of 128
 	PDB0_SC |= (1<<3); //Set multiplication of factor 20
 	PDB0_SC &= ~(1<<2); //Set multiplication factor of 20
-	PDB0_SS |= (1<<11) | (1<<10) | (1<<9) | (1<<8); //Sets trigger to be the software trigger
+	PDB0_SC |= (1<<11) | (1<<10) | (1<<9) | (1<<8); //Sets trigger to be the software trigger
 	PDB0_SC |= (1<<7); // Enables PDB
 	
 	//Set the mod field to get a 1 second period.
@@ -73,7 +78,7 @@ void initPDB(void){
 	PDB0_IDLY = 10;
 	
 	//Enable the interrupt mask.
-    NVIC_EnableIRQ(PDB0_IRQn);
+    PDB0_SC |= (1 << 17);
 	
 	//Enable LDOK to have PDB0_SC register changes loaded. 
 	PDB0_SC |= (1<<0);
@@ -107,7 +112,8 @@ void initFTM(void){
 	FTM0_SC |= (1<<3);
 	
 	//Enable the interrupt mask. Timer overflow Interrupt enable
-    NVIC_EnableIRQ(FTM0_IRQn);
+    FTM0_SC |= (1 << 6);
+    //FTM0_CnSC would potentially be the interrupt mask
 	
 	return;
 }
@@ -151,7 +157,10 @@ void initGPIO(void){
 void initInterrupts(void){
 	/*Can find these in MK64F12.h*/
 	// Enable NVIC for portA,portC, PDB0,FTM0
-	
-	
+	NVIC_EnableIRQ(FTM0_IRQn);
+	NVIC_EnableIRQ(PDB0_IRQn);
+    NVIC_EnableIRQ(PORTA_IRQn);
+    NVIC_EnableIRQ(PORTC_IRQn);
+    
 	return;
 }
