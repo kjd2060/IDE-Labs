@@ -7,8 +7,6 @@
 #include "MK64F12.h"
 #include <stdio.h>
 
-#define PDB_IF_MASK 0xFFFFFFBF // PDB interrupt flag mask
-#define FTM_IF_MASK 0xFFFFFF7F // FTM interrupt flag mask
 #define PORT_IF_MASK 0x18 // PORTx interupt flag mask
 #define FTM_TOF_MASK 0xFFFFFFBF // FTM TOF interrupt enable
 //variables global to the IRQ handlers which dictates if timer is enabled &  timer counter
@@ -37,7 +35,7 @@ int Switch2_Down(void){
 void PDB0_IRQHandler(void){ //For PDB timer
 	
     // clear interrupt in register PDB0_SC
-    PDB0_SC &= PDB_IF_MASK; // turn off the 6th bit, which is the IRQ flag bit
+    PDB0_SC &= ~(PDB_SC_PDBIF_MASK); // turn off the 6th bit, which is the IRQ flag bit
     
     // toggle the output state for LED1
     GPIOB_PCOR = gRed;
@@ -47,9 +45,8 @@ void PDB0_IRQHandler(void){ //For PDB timer
 	
 void FTM0_IRQHandler(void){ //For FTM timer
     // clear interrupt in register FTM0_SC
-    int temp = (FTM0_SC & (1 << 7));
     uart_put("FTM0 IRQHandler\n\r");
-	FTM0_SC &= FTM_IF_MASK;
+	FTM0_SC &= ~(FTM_SC_TOF_MASK);
     // if switch2 has been pressed, increment the counter var
     if(gLocalVar == 1){
         gCount += 1;
