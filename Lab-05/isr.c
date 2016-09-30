@@ -2,10 +2,10 @@
  * isr.c
  */
 
+#include "uart.h"
 #include "isr.h"
 #include "MK64F12.h"
 #include <stdio.h>
-#include "uart.h"
 
 #define PDB_IF_MASK 0xFFFFFFBF // PDB interrupt flag mask
 #define FTM_IF_MASK 0xFFFFFF7F // FTM interrupt flag mask
@@ -41,12 +41,14 @@ void PDB0_IRQHandler(void){ //For PDB timer
     
     // toggle the output state for LED1
     GPIOB_PCOR = gRed;
+    uart_put("PDB0 IRQ Handler\n\r");
 	return;
 }
 	
 void FTM0_IRQHandler(void){ //For FTM timer
-    
     // clear interrupt in register FTM0_SC
+    int temp = (FTM0_SC & (1 << 7));
+    uart_put("FTM0 IRQHandler\n\r");
 	FTM0_SC &= FTM_IF_MASK;
     // if switch2 has been pressed, increment the counter var
     if(gLocalVar == 1){
@@ -58,7 +60,7 @@ void FTM0_IRQHandler(void){ //For FTM timer
 }
 	
 void PORTA_IRQHandler(void){ //For switch 3
-	
+	uart_put("PORTA IRQ HANDLER\n\r");
 	// clear interrupt; write a logic 1 to the flag
     PORTA_PCR4 |= PORT_IF_MASK;
     
@@ -79,6 +81,7 @@ void PORTA_IRQHandler(void){ //For switch 3
 void PORTC_IRQHandler(void){ //For switch 2
 	
     char* convertedTimer = (char*)FTM0_CNT;
+    uart_put("PORTC IRQ HANDLER\n\r");
     // clear the interrupt
     PORTC_PCR6 |= PORT_IF_MASK;
     
@@ -103,9 +106,9 @@ void PORTC_IRQHandler(void){ //For switch 2
         GPIOB_PDOR = gBlue;
         convertedTimer = (char*)FTM0_CNT;
         // print the result as 'Button held for XX ms'
-        printf("Button held for");
-        printf(convertedTimer);
-        printf(" ms\n");
+        uart_put("Button held for ");
+        uart_put(convertedTimer);
+        uart_put(" ms\n\r");
     } 
 	return;
 }
