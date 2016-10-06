@@ -86,9 +86,23 @@ void uart_putchar(char ch)
 	UART0_D = ch;
 	}
 
-void uart_put(char *ptr_str){
+void put(char *ptr_str){
 	/*use putchar to print string*/
     while(*ptr_str){
         uart_putchar(*ptr_str++);
     }
+}
+
+void putnumU(int i){
+	/*use putchar to print number*/
+	char str[10];
+	sprintf(str, "%d", i);
+	put(str);
+}
+
+void putnumH(int i){
+	/*use putchar to print number*/
+	char str[32];
+	sprintf(str, "%x", i);
+	put(str);
 }
