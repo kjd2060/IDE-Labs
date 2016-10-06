@@ -40,15 +40,11 @@ void initInterrupts(void);
 int main(void){
 	//initializations
     uart_init(); // assume this is good
-    uart_put("Starting the thing\n\r");
+    put("Starting the Program.\n\r");
 	initPDB();
-    uart_put("PDB init successful\n\r");
 	initGPIO();
-    uart_put("GPIO init successful\n\r");
 	initFTM();
-	uart_put("FTM init successful\n\r");
 	initInterrupts();
-	uart_put("Interrupt inits successful\n\r");
 	for(;;){
 		//To infinity and beyond
 	}
@@ -62,38 +58,39 @@ void initPDB(void){
 	// Set continuous mode, prescaler of 128, multiplication factor of 20,
 	// software triggering, and PDB enabled
 	
+	// Enables PDB
+	PDB0_SC |= PDB_SC_PDBEN_MASK;
+	
 	//Enable coninuous mode
 	PDB0_SC |= PDB_SC_CONT_MASK;
 	
 	//Set prescaler of 128
-	PDB0_SC |= PDB_SC_PRESCALER_MASK;
+	PDB0_SC |= PDB_SC_PRESCALER(0x7);
 	
 	//Set multiplication of factor 20
-	PDB0_SC |= PDB_SC_MULT(10);
+	PDB0_SC |= PDB_SC_MULT(0x2);
 	
 	
 	//Sets trigger to be the software trigger
-	PDB0_SC |= PDB_SC_TRGSEL_MASK;
-	
-	// Enables PDB
-	PDB0_SC |= PDB_SC_PDBEN_MASK;
+	PDB0_SC |= PDB_SC_TRGSEL(0xF);
 	
 	//Set the mod field to get a 1 second period.
 	//There is a division by 2 to make the LED blinking period 1 second.
 	//This translates to two mod counts in one second (one for on, one for off)
-	PDB0_MOD |= PDB_MOD_MOD(2);
+	PDB0_MOD = PDB_MOD_MOD(0x1000);
 	
 	
 	//Configure the Interrupt Delay register.
 	//Not sure if this is the correct val here
-	PDB0_IDLY = PDB_IDLY_IDLY(2);
+	PDB0_IDLY = PDB_IDLY_IDLY(0x1);
 	
 	//Enable the interrupt mask.
-	//Not sure if this is the correct val here
-	PDB0_SC |= PDB_SC_PDBEIE_MASK;
+	PDB0_SC |= PDB_SC_PDBIE_MASK;
 	
 	//Enable LDOK to have PDB0_SC register changes loaded. 
+	PDB0_SC |= PDB_SC_LDMOD(0x0);
 	PDB0_SC |= PDB_SC_LDOK_MASK;
+	PDB0_SC |= PDB_SC_SWTRIG_MASK;
 	
 	return;
 }
@@ -110,7 +107,7 @@ void initFTM(void){
 	FTM0_SC |= FTM_SC_PS_MASK;
 	
 	//reset the counter to zero
-	FTM0_CNT |= FTM_CNT_COUNT(0);
+	FTM0_CNT |= FTM_CNT_COUNT(0x0);
 	
 	//Set the overflow rate
 	//(Sysclock/128)- clock after prescaler
@@ -120,7 +117,7 @@ void initFTM(void){
 	FTM0_MOD |= FTM_MOD_MOD((DEFAULT_SYSTEM_CLOCK/(1<<7))/1000);
 	
 	//Select the System Clock 
-	FTM0_SC |= FTM_SC_CLKS(01);
+	FTM0_SC |= FTM_SC_CLKS(0x1);
 	
 	//Enable the interrupt mask. Timer overflow Interrupt enable
   FTM0_SC |= FTM_SC_TOIE_MASK;
@@ -129,37 +126,46 @@ void initFTM(void){
 }
 
 void initGPIO(void){
-    //initialize push buttons and LEDs
-    //initialize clocks for each different port used.
-    // Enable clocks on Ports B and E for LED timing
-	SIM_SCGC5 = SIM_SCGC5_PORTB_MASK; //  Enables Clock on Port B
-	SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK; // Enables clock on port E
-	
-	//Configure Port Control Register for Inputs with pull enable and pull up resistor
-    // Configure mux for Outputs
-    PORTB_PCR21 = PORT_PCR_MUX(1);
-	PORTB_PCR22 = PORT_PCR_MUX(1);
-	PORTE_PCR26 = PORT_PCR_MUX(1);
+	// Enable LEDs
+	// Enable clocks on Ports B and E for LED timing
+	SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK;
+	SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK;
+	// Configure the Signal Multiplexer for GPIO
+	PORTB_PCR21 = PORT_PCR_MUX(1); 	//PTB21 = Blue LED
+	PORTB_PCR22 = PORT_PCR_MUX(1);	//PTB22 = Red LED
+	PORTE_PCR26 = PORT_PCR_MUX(1);	//PTE26 = Green LED
 	
 	// Switch the GPIO pins to output mode
-	GPIOB_PDDR = gRed | gBlue;
-	GPIOE_PDDR = gGreen;
+	GPIOB_PDDR |= gBlue; // Blue LED
+	GPIOB_PDDR |= gRed; // Red LED
+	GPIOE_PDDR |= gGreen; // Green LED
 	
 	// Turn off the LEDs
-    GPIOB_PDOR = gRed | gBlue;
-	GPIOE_PDOR = gGreen;
+	// LEDs are active low
+	GPIOB_PDOR |= gBlue;
+	GPIOB_PDOR |= gRed;
+	GPIOE_PDOR |= gGreen;
     
-    
-	// Enable clock for Port C PTC6 button
-	SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK; //  Enables Clock on Port C
+	
+	// Enable Buttons
+  // Enable clocks
+	SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK;
 	SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
+	 
+	
 	// Configure the Mux for the button
-	// interrupt configuration for SW3(Rising Edge) and SW2 (Either)
-	PORTC_PCR6 |= PORT_PCR_IRQC(1011);
-	PORTA_PCR4 |= PORT_PCR_IRQC(1001);
+	PORTC_PCR6 = PORT_PCR_MUX(0x1);	// SW2
+	PORTA_PCR4 = PORT_PCR_MUX(0x1);	// SW3
+	 
+	// interrupt configuration for 
+	// SW3 when pressed (falling-edge) 
+	// SW2 when pressed and when released (both edges)
+	PORTC_PCR6 |= PORT_PCR_IRQC(0xB);
+	PORTA_PCR4 |= PORT_PCR_IRQC(0xA);
+
 	// Set the push button as an input
-	GPIOC_PDOR = (1 << 6); // Sets SW 2 as input
-	GPIOA_PDOR = (1 << 6); // Sets SW 3 as input
+	GPIOC_PDDR &= ~(1<<6);
+	GPIOA_PDDR &= ~(1<<4);
     
 	return;
 }
