@@ -61,27 +61,39 @@ void initPDB(void){
 	
 	// Set continuous mode, prescaler of 128, multiplication factor of 20,
 	// software triggering, and PDB enabled
-	PDB0_SC |= (1<<1); //Enable coninuous mode
-	PDB0_SC |= (1<<14) | (1<<13) | (1<<12); //Set prescaler of 128
-	PDB0_SC |= (1<<3); //Set multiplication of factor 20
-	PDB0_SC &= ~(1<<2); //Set multiplication factor of 20
-	PDB0_SC |= (1<<11) | (1<<10) | (1<<9) | (1<<8); //Sets trigger to be the software trigger
-	PDB0_SC |= (1<<7); // Enables PDB
+	
+	//Enable coninuous mode
+	PDB0_SC |= PDB_SC_CONT_MASK;
+	
+	//Set prescaler of 128
+	PDB0_SC |= PDB_SC_PRESCALER_MASK;
+	
+	//Set multiplication of factor 20
+	PDB0_SC |= PDB_SC_MULT(10);
+	
+	
+	//Sets trigger to be the software trigger
+	PDB0_SC |= PDB_SC_TRGSEL_MASK;
+	
+	// Enables PDB
+	PDB0_SC |= PDB_SC_PDBEN_MASK;
 	
 	//Set the mod field to get a 1 second period.
 	//There is a division by 2 to make the LED blinking period 1 second.
 	//This translates to two mod counts in one second (one for on, one for off)
-	PDB0_MOD |= (1<<1);
-	PDB0_MOD &= ~(1<<0);
+	PDB0_MOD |= PDB_MOD_MOD(2);
+	
 	
 	//Configure the Interrupt Delay register.
-	PDB0_IDLY = 10;
+	//Not sure if this is the correct val here
+	PDB0_IDLY = PDB_IDLY_IDLY(2);
 	
 	//Enable the interrupt mask.
-    PDB0_SC |= (1 << 17);
+	//Not sure if this is the correct val here
+	PDB0_SC |= PDB_SC_PDBEIE_MASK;
 	
 	//Enable LDOK to have PDB0_SC register changes loaded. 
-	PDB0_SC |= (1<<0);
+	PDB0_SC |= PDB_SC_LDOK_MASK;
 	
 	return;
 }
@@ -92,28 +104,26 @@ void initFTM(void){
 	
 	
 	//turn off FTM Mode to  write protection;
-	FTM0_MODE &= ~(1<<2);
+	FTM0_MODE |= FTM_MODE_WPDIS_MASK;
 	
 	//divide the input clock down by 128,  
-	FTM0_SC |= (1<<2) | (1<<1) | (1<<0);
+	FTM0_SC |= FTM_SC_PS_MASK;
 	
 	//reset the counter to zero
-	FTM0_CNT = 0;
+	FTM0_CNT |= FTM_CNT_COUNT(0);
 	
 	//Set the overflow rate
 	//(Sysclock/128)- clock after prescaler
 	//(Sysclock/128)/1000- slow down by a factor of 1000 to go from
 	//Mhz to Khz, then 1/KHz = msec
 	//Every 1msec, the FTM counter will set the overflow flag (TOF) and 
-	FTM0->MOD = (DEFAULT_SYSTEM_CLOCK/(1<<7))/1000;
+	FTM0_MOD |= FTM_MOD_MOD((DEFAULT_SYSTEM_CLOCK/(1<<7))/1000);
 	
 	//Select the System Clock 
-	FTM0_SC &= ~(1<<4);
-	FTM0_SC |= (1<<3);
+	FTM0_SC |= FTM_SC_CLKS(01);
 	
 	//Enable the interrupt mask. Timer overflow Interrupt enable
-    FTM0_SC |= (1 << 6);
-    //FTM0_CnSC would potentially be the interrupt mask
+  FTM0_SC |= FTM_SC_TOIE_MASK;
 	
 	return;
 }
@@ -122,7 +132,7 @@ void initGPIO(void){
     //initialize push buttons and LEDs
     //initialize clocks for each different port used.
     // Enable clocks on Ports B and E for LED timing
-    SIM_SCGC5 = SIM_SCGC5_PORTB_MASK; //  Enables Clock on Port B
+	SIM_SCGC5 = SIM_SCGC5_PORTB_MASK; //  Enables Clock on Port B
 	SIM_SCGC5 |= SIM_SCGC5_PORTE_MASK; // Enables clock on port E
 	
 	//Configure Port Control Register for Inputs with pull enable and pull up resistor
@@ -145,8 +155,8 @@ void initGPIO(void){
 	SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK;
 	// Configure the Mux for the button
 	// interrupt configuration for SW3(Rising Edge) and SW2 (Either)
-	PORTC_PCR6 = SW2_IRQ_ENABLE;
-	PORTA_PCR4 = SW3_IRQ_ENABLE;
+	PORTC_PCR6 |= PORT_PCR_IRQC(1011);
+	PORTA_PCR4 |= PORT_PCR_IRQC(1001);
 	// Set the push button as an input
 	GPIOC_PDOR = (1 << 6); // Sets SW 2 as input
 	GPIOA_PDOR = (1 << 6); // Sets SW 3 as input
@@ -159,8 +169,8 @@ void initInterrupts(void){
 	// Enable NVIC for portA,portC, PDB0,FTM0
 	NVIC_EnableIRQ(FTM0_IRQn);
 	NVIC_EnableIRQ(PDB0_IRQn);
-    NVIC_EnableIRQ(PORTA_IRQn);
-    NVIC_EnableIRQ(PORTC_IRQn);
+  NVIC_EnableIRQ(PORTA_IRQn);
+  NVIC_EnableIRQ(PORTC_IRQn);
     
 	return;
 }
