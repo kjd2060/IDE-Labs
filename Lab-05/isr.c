@@ -45,8 +45,8 @@ void PDB0_IRQHandler(void){ //For PDB timer
 	
 void FTM0_IRQHandler(void){ //For FTM timer
     // clear interrupt in register FTM0_SC
-    uart_put("FTM0 IRQHandler\n\r");
-	FTM0_SC &= ~(FTM_SC_TOF_MASK);
+    //uart_put("FTM0 IRQHandler\n\r");
+		FTM0_SC &= ~(FTM_SC_TOF_MASK);
     // if switch2 has been pressed, increment the counter var
     if(gLocalVar == 1){
         gCount += 1;
