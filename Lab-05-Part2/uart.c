@@ -63,7 +63,6 @@ void uart_init()
 	//Enable transmitter and receiver of UART
 	UART0_C2 |= (1<<2);
 	UART0_C2 |= (1<<3);
-	 
 }
 
 uint8_t uart_getchar()

@@ -15,7 +15,7 @@
 void PDB_INIT(void) {
     //Enable PDB Clock
     SIM_SCGC6 |= SIM_SCGC6_PDB_MASK;
-    PDB0_CNT = 0x0000;
+    //PDB0_CNT |= PDB_CNT_CNT(0x0000);
     PDB0_MOD = 50000; // 50,000,000 / 50,000 = 1000
 
     PDB0_SC = PDB_SC_PDBEN_MASK | PDB_SC_CONT_MASK | PDB_SC_TRGSEL(0xf)
@@ -27,7 +27,7 @@ void ADC1_INIT(void) {
     unsigned int calib;
  
     // Turn on ADC1
-    (Insert your code here.)
+		SIM_SCGC3 |= SIM_SCGC3_ADC1_MASK;
  
     // Configure CFG Registers
     // Configure ADC to divide 50 MHz down to 6.25 MHz AD Clock, 16-bit single ended
@@ -60,16 +60,19 @@ void ADC1_INIT(void) {
  
  
     // Enable NVIC interrupt
-    (Insert your code here.)
+    NVIC_EnableIRQ(ADC1_IRQn);
 }
  
 // ADC1 Conversion Complete ISR
 void ADC1_IRQHandler(void) {
+    char str[100];
     // Read the result (upper 12-bits). This also clears the Conversion complete flag.
+		long long temp;
     unsigned short i = ADC1_RA >> 4;
-
+		put("Interrupt\n\r");
+		
     //Set DAC output value (12bit)
-    (Insert your code here.)
+		DAC0_C0 &= ~(1<<DAC_C0_DACRFS_SHIFT);
 }
 
 void DAC0_INIT(void) {
@@ -81,12 +84,11 @@ void DAC0_INIT(void) {
  
 int main(void) {
     int i; char str[100];
-   
     // Enable UART Pins
-    (Insert your code here.)
+    //(Insert your code here.)
    
     // Initialize UART
-    (Insert your code here.)
+    uart_init();
                
     DAC0_INIT();
     ADC1_INIT();
@@ -98,6 +100,8 @@ int main(void) {
     for(;;) {
 		sprintf(str,"\n Decimal: %d Hexadecimal: %x \n\r",ADC1_RA,ADC1_RA);
 		put(str);
+
+		/* Return the 8-bit data from the receiver */
 		for( i=0; i < 5000000; ++i ){
                        
         }
@@ -105,4 +109,3 @@ int main(void) {
  
     return 0;
 }
- 
