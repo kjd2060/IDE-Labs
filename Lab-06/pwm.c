@@ -24,20 +24,32 @@ static volatile unsigned int PWMTick = 0;
  * @param Frequency (~1000 Hz to 20000 Hz)
  * @param dir: 1 for C4 active, else C3 active 
  */
-void SetDutyCycle(unsigned int DutyCycle, unsigned int Frequency, int dir)
+void SetDutyCycle(unsigned int DutyCycle, unsigned int Frequency, int dir, int motorSelect)
 {
+	// motorSelect 0 == DC Motor
+	// motorSelect 1 == Servo motor
 	// Calculate the new cutoff value
 	uint16_t mod = (uint16_t) (((CLOCK/Frequency) * DutyCycle) / 100);
   
-	// Set outputs 
-	if(dir==1)
-    {FTM0_C3V = mod; FTM0_C2V=0;}
-  else
-    {FTM0_C2V = mod; FTM0_C3V=0;}
-
+	// Set outputs
+	if(motorSelect == 0)
+	{
+		if(dir==1)
+			{FTM0_C3V = mod; FTM0_C2V=0;}
+		else
+			{FTM0_C2V = mod; FTM0_C3V=0;}
+	}
+	else if(motorSelect == 1)
+	{
+		if(dir==1)
+			{FTM0_C5V = mod; FTM0_C6V=0;}
+		else
+			{FTM0_C6V = mod; FTM0_C5V=0;}
+	}
 	// Update the clock to the new frequency
 	FTM0_MOD = (CLOCK/Frequency);
 }
+
 
 /*
  * Initialize the FlexTimer for PWM
@@ -54,8 +66,11 @@ void InitPWM()
 	// Use drive strength enable flag to high drive strength
 	//These port/pins may need to be updated for the K64 <Yes, they do. Here are two that work.>
 	
+	// PTA0, C5 : PTA1, C6 : Both need mux3
     PORTC_PCR3  = PORT_PCR_MUX(4)  | PORT_PCR_DSE_MASK; //Ch2
     PORTC_PCR4  = PORT_PCR_MUX(4)  | PORT_PCR_DSE_MASK;//Ch3
+		PORTA_PCR0  = PORT_PCR_MUX(3)  | PORT_PCR_DSE_MASK; // C5
+	  PORTA_PCR1  = PORT_PCR_MUX(3)  | PORT_PCR_DSE_MASK; // C6
 	
 	// 39.3.10 Disable Write Protection
 	FTM0_MODE |= FTM_MODE_WPDIS_MASK;
@@ -77,9 +92,16 @@ void InitPWM()
 	FTM0_C3SC |= FTM_CnSC_MSB_MASK | FTM_CnSC_ELSB_MASK;
 	FTM0_C3SC &= ~FTM_CnSC_ELSA_MASK;
 	
+	
 	// See Table 39-67,  Edge-aligned PWM, Low-true pulses (clear out on match)
 	FTM0_C2SC |= FTM_CnSC_MSB_MASK | FTM_CnSC_ELSB_MASK;
 	FTM0_C2SC &= ~FTM_CnSC_ELSA_MASK;
+	
+	FTM0_C5SC |= FTM_CnSC_MSB_MASK | FTM_CnSC_ELSB_MASK;
+	FTM0_C5SC &= ~FTM_CnSC_ELSA_MASK;
+	
+	FTM0_C6SC |= FTM_CnSC_MSB_MASK | FTM_CnSC_ELSB_MASK;
+	FTM0_C6SC &= ~FTM_CnSC_ELSA_MASK;
 	
 	// 39.3.3 FTM Setup
 	// Set prescale value to 1 
@@ -92,6 +114,7 @@ void InitPWM()
     //NVIC_EnableIRQ(FTM0_IRQn);
 
 }
+
 
 /*OK to remove this ISR?*/
 void FTM0_IRQHandler(void){ //For FTM timer
