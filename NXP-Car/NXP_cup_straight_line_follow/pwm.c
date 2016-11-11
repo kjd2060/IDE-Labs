@@ -66,7 +66,7 @@ void pwm_init()
     SIM_SCGC3 |= SIM_SCGC3_FTM3_MASK;
     
     // Enable clock on PORT A so it can output
-    SIM_SCGC5 |= SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTD_MASK;
+    SIM_SCGC5 |= SIM_SCGC5_PORTA_MASK | SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTD_MASK | SIM_SCGC5_PORTC_MASK;
     
     // 11.4.1 Route the output of FTM channel 0 to the pins
     // Use drive strength enable flag to high drive strength
