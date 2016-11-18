@@ -1,0 +1,211 @@
+
+**** 11/18/16 15:52:06 ****** PSpice Lite (October 2012) ****** ID# 10813 ****
+
+ ** Profile: "SCHEMATIC1-bias"  [ C:\Users\Nonordon\Google Drive\school work\College\Fall 2016\CMPE460\Lab8\lab08_pspice-pspicefiles\
+
+
+ ****     CIRCUIT DESCRIPTION
+
+
+******************************************************************************
+
+
+
+
+** Creating circuit file "bias.cir" 
+** WARNING: THIS AUTOMATICALLY GENERATED FILE MAY BE OVERWRITTEN BY SUBSEQUENT SIMULATIONS
+
+*Libraries: 
+* Profile Libraries :
+* Local Libraries :
+* From [PSPICE NETLIST] section of C:\Users\Nonordon\AppData\Roaming\SPB_16.6\cdssetup\OrCAD_PSpice/16.6.0/PSpice.ini file:
+.lib "nomd.lib" 
+
+*Analysis directives: 
+.TRAN  0 .01s 0 .000001 
+.OPTIONS ADVCONV
+.PROBE64 V(alias(*)) I(alias(*)) W(alias(*)) D(alias(*)) NOISE(alias(*)) 
+.INC "..\SCHEMATIC1.net" 
+
+
+
+**** INCLUDING SCHEMATIC1.net ****
+* source LAB08_PSPICE
+.EXTERNAL INPUT Vout
+.EXTERNAL INPUT Vout2
+V_V1         N14404 N14392 5Vdc
+R_Rf         N14416 N14404  10k TC=0,0 
+R_RL         VOUT N14404  1k TC=0,0 
+X_U2         N14587 N14497 N14775 0 N14497 uA741
+R_R1         N14690 VOUT2  1k TC=0,0 
+C_C1         N14678 VOUT2  750u  TC=0,0 
+V_RailP         N14775 0 5Vdc
+X_Q1         VOUT N16332 N14392 Q2N6059
+V_VirtG         N14690 0 200mVdc
+V_V3         N14678 0 DC 0Vdc AC 1Vac 
+D_D1         N14416 N14392 D1N3940 
+V_V5         N14587 0  
++SIN 2.5 3 1k 0 0 0
+V_V6         N16332 0  
++SIN 15mV 10mV 1k 0 0 0
+
+**** RESUMING bias.cir ****
+.END
+
+**** 11/18/16 15:52:06 ****** PSpice Lite (October 2012) ****** ID# 10813 ****
+
+ ** Profile: "SCHEMATIC1-bias"  [ C:\Users\Nonordon\Google Drive\school work\College\Fall 2016\CMPE460\Lab8\lab08_pspice-pspicefiles\
+
+
+ ****     Diode MODEL PARAMETERS
+
+
+******************************************************************************
+
+
+
+
+               D1N3940         X_U2.dx         X_Q1.Dmodel     
+          IS  400.000000E-12  800.000000E-18    5.325300E-12 
+           N    1.48                            3.4748       
+         ISR                                  100.000000E-12 
+          BV  600                             120            
+         IBV  100.000000E-06                    1.000000E-06 
+          RS     .105           1               1.000000E-03 
+          TT  800.000000E-09                    5.000000E-09 
+         CJO   19.500000E-12                    1.000000E-12 
+          VJ     .4                              .75         
+           M     .38                             .3333       
+          FC     .9                                          
+          EG    1.36                                         
+         XTI   -8                                            
+
+
+**** 11/18/16 15:52:06 ****** PSpice Lite (October 2012) ****** ID# 10813 ****
+
+ ** Profile: "SCHEMATIC1-bias"  [ C:\Users\Nonordon\Google Drive\school work\College\Fall 2016\CMPE460\Lab8\lab08_pspice-pspicefiles\
+
+
+ ****     BJT MODEL PARAMETERS
+
+
+******************************************************************************
+
+
+
+
+               X_U2.qx         X_Q1.Q1model    X_Q1.Q2model    
+               NPN             NPN             NPN             
+       LEVEL    1               1               1            
+          IS  800.000000E-18    1.501000E-12    1.501000E-12 
+          BF   93.75          772.1           772.1          
+          NF    1               1               1            
+         VAF                  100             100            
+         IKF                     .1298           .1298       
+         ISE                  163.800000E-12  163.800000E-12 
+          NE                    1.998           1.998        
+          BR    1             499.5           499.5          
+          NR    1               1               1            
+         VAR                  100             100            
+         IKR                   19.98           19.98         
+         ISC                    1.536000E-12    1.536000E-12 
+          NC                    2.997           2.997        
+          NK                     .5077           .5077       
+         ISS    0               0               0            
+          RB                    1.101           1.101        
+          RE    0               0               0            
+          RC    0                .1498           .1498       
+         CJE    0             316.600000E-12  316.600000E-12 
+         VJE     .75             .436            .436        
+         MJE                     .2878           .2878       
+         CJC    0             189.300000E-12    0            
+         VJC     .75             .6244           .6244       
+         MJC     .33             .1866           .1866       
+        XCJC    1                .9              .9          
+         CJS    0               0               0            
+         VJS     .75             .75             .75         
+          TF                   16.416000E-09   16.416000E-09 
+         XTF                    1               1            
+         VTF                   10              10            
+         ITF                     .01             .01         
+          TR                   13.837000E-09   13.837000E-09 
+          KF    0               0               0            
+          AF    1               1               1            
+          CN    2.42            2.42            2.42         
+           D     .87             .87             .87         
+
+
+**** 11/18/16 15:52:06 ****** PSpice Lite (October 2012) ****** ID# 10813 ****
+
+ ** Profile: "SCHEMATIC1-bias"  [ C:\Users\Nonordon\Google Drive\school work\College\Fall 2016\CMPE460\Lab8\lab08_pspice-pspicefiles\
+
+
+ ****     INITIAL TRANSIENT SOLUTION       TEMPERATURE =   27.000 DEG C
+
+
+******************************************************************************
+
+
+
+ NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE
+
+
+( VOUT)    5.0150  (VOUT2)     .2000  (N14392)     .0150 (N14404)    5.0150     
+
+(N14416)     .5481 (N14497)    2.5000 (N14587)    2.5000 (N14678)    0.0000     
+
+(N14690)     .2000 (N14775)    5.0000 (N16332)     .0150 (X_Q1.4)     .0150     
+
+(X_U2.6)-3.221E-09 (X_U2.7)    2.5000 (X_U2.8)    2.5000 (X_U2.9)    0.0000     
+
+(X_U2.10)    1.8923                   (X_U2.11)    4.9603                       
+
+(X_U2.12)    4.9603                   (X_U2.13)    1.9062                       
+
+(X_U2.14)    1.9062                   (X_U2.53)    4.0000                       
+
+(X_U2.54)    1.0000                   (X_U2.90) 79.77E-06                       
+
+(X_U2.91)   40.0000                   (X_U2.92)  -40.0000                       
+
+(X_U2.99)    2.5000                   
+
+
+
+
+    VOLTAGE SOURCE CURRENTS
+    NAME         CURRENT
+
+    V_V1        -4.467E-04
+    V_RailP     -2.903E-04
+    V_VirtG      0.000E+00
+    V_V3         0.000E+00
+    V_V5        -7.974E-08
+    V_V6         4.268E-15
+    X_U2.vb     -3.221E-14
+    X_U2.vc      1.501E-12
+    X_U2.ve      1.501E-12
+    X_U2.vlim    7.977E-08
+    X_U2.vlp    -4.000E-11
+    X_U2.vln    -4.000E-11
+
+    TOTAL POWER DISSIPATION   3.69E-03  WATTS
+
+
+
+          JOB CONCLUDED
+
+**** 11/18/16 15:52:06 ****** PSpice Lite (October 2012) ****** ID# 10813 ****
+
+ ** Profile: "SCHEMATIC1-bias"  [ C:\Users\Nonordon\Google Drive\school work\College\Fall 2016\CMPE460\Lab8\lab08_pspice-pspicefiles\
+
+
+ ****     JOB STATISTICS SUMMARY
+
+
+******************************************************************************
+
+
+
+  Total job time (using Solver 1)   =         .44
+
