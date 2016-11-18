@@ -1,0 +1,172 @@
+
+**** 11/18/16 15:48:11 ***** PSpice 16.6.0 (October 2012) ***** ID# 0 ********
+
+ ** Profile: "SCHEMATIC1-HP_Filter"  [ D:\ide\Lab 08\PSPICE-PSpiceFiles\SCHEMATIC1\HP_Filter.sim ] 
+
+
+ ****     CIRCUIT DESCRIPTION
+
+
+******************************************************************************
+
+
+
+
+** Creating circuit file "HP_Filter.cir" 
+** WARNING: THIS AUTOMATICALLY GENERATED FILE MAY BE OVERWRITTEN BY SUBSEQUENT SIMULATIONS
+
+*Libraries: 
+* Profile Libraries :
+* Local Libraries :
+* From [PSPICE NETLIST] section of C:\Users\kjd2060\cdssetup\OrCAD_PSpice/16.6.0/PSpice.ini file:
+.lib "nom.lib" 
+
+*Analysis directives: 
+.AC DEC 100 1 300
+.OPTIONS ADVCONV
+.PROBE64 V(alias(*)) I(alias(*)) W(alias(*)) D(alias(*)) NOISE(alias(*)) 
+.INC "..\SCHEMATIC1.net" 
+
+
+
+**** INCLUDING SCHEMATIC1.net ****
+* source PSPICE
+R_R1         N00218 N00225  16k TC=0,0 
+C_C1         N00362 N00225  1uF  TC=0,0 
+R_R2         N00362 N00266  1k TC=0,0 
+R_R3         N00266 N00417  60k TC=0,0 
+V_V2         N00472 0 5V
+R_R4         N00362 N00417  100 TC=0,0 
+V_V4         N00218 N00362 DC 0Vdc AC 50mV 
+X_U1         N00225 N00266 N00472 N01460 N00417 uA741
+V_V5         N00362 0 200mV
+V_V6         0 N01460 5V
+
+**** RESUMING HP_Filter.cir ****
+.END
+
+**** 11/18/16 15:48:11 ***** PSpice 16.6.0 (October 2012) ***** ID# 0 ********
+
+ ** Profile: "SCHEMATIC1-HP_Filter"  [ D:\ide\Lab 08\PSPICE-PSpiceFiles\SCHEMATIC1\HP_Filter.sim ] 
+
+
+ ****     Diode MODEL PARAMETERS
+
+
+******************************************************************************
+
+
+
+
+               X_U1.dx         X_U1.dy         
+          IS  800.000000E-18  800.000000E-18 
+          RS    1               1.000000E-03 
+         CJO                   10.000000E-12 
+
+
+**** 11/18/16 15:48:11 ***** PSpice 16.6.0 (October 2012) ***** ID# 0 ********
+
+ ** Profile: "SCHEMATIC1-HP_Filter"  [ D:\ide\Lab 08\PSPICE-PSpiceFiles\SCHEMATIC1\HP_Filter.sim ] 
+
+
+ ****     BJT MODEL PARAMETERS
+
+
+******************************************************************************
+
+
+
+
+               X_U1.qx         
+               NPN             
+       LEVEL    1            
+          IS  800.000000E-18 
+          BF   93.75         
+          NF    1            
+          BR    1            
+          NR    1            
+         ISS    0            
+          RE    0            
+          RC    0            
+         CJE    0            
+         VJE     .75         
+         CJC    0            
+         VJC     .75         
+         MJC     .33         
+        XCJC    1            
+         CJS    0            
+         VJS     .75         
+          KF    0            
+          AF    1            
+          CN    2.42         
+           D     .87         
+
+
+**** 11/18/16 15:48:11 ***** PSpice 16.6.0 (October 2012) ***** ID# 0 ********
+
+ ** Profile: "SCHEMATIC1-HP_Filter"  [ D:\ide\Lab 08\PSPICE-PSpiceFiles\SCHEMATIC1\HP_Filter.sim ] 
+
+
+ ****     SMALL SIGNAL BIAS SOLUTION       TEMPERATURE =   27.000 DEG C
+
+
+******************************************************************************
+
+
+
+ NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE     NODE   VOLTAGE
+
+
+(N00218)     .2000 (N00225)     .1987 (N00266)     .1987 (N00362)     .2000     
+
+(N00417)     .1277 (N00472)    5.0000 (N01460)   -5.0000 (X_U1.6)-1.655E-06     
+
+(X_U1.7)     .0914 (X_U1.8)     .0914 (X_U1.9)    0.0000 (X_U1.10)    -.4090    
+
+(X_U1.11)    4.9603                   (X_U1.12)    4.9603                       
+
+(X_U1.13)    -.3951                   (X_U1.14)    -.3951                       
+
+(X_U1.53)    4.0000                   (X_U1.54)   -4.0000                       
+
+(X_U1.90)    -.7245                   (X_U1.91)   40.0000                       
+
+(X_U1.92)  -40.0000                   (X_U1.99)    0.0000                   
+
+
+
+
+    VOLTAGE SOURCE CURRENTS
+    NAME         CURRENT
+
+    V_V2        -5.656E-04
+    V_V4        -7.982E-08
+    V_V5        -7.246E-04
+    V_V6        -5.658E-04
+    X_U1.vb     -1.655E-11
+    X_U1.vc      3.873E-12
+    X_U1.ve      4.220E-12
+    X_U1.vlim   -7.245E-04
+    X_U1.vlp    -4.073E-11
+    X_U1.vln    -3.928E-11
+
+    TOTAL POWER DISSIPATION   5.80E-03  WATTS
+
+
+
+          JOB CONCLUDED
+
+**** 11/18/16 15:48:11 ***** PSpice 16.6.0 (October 2012) ***** ID# 0 ********
+
+ ** Profile: "SCHEMATIC1-HP_Filter"  [ D:\ide\Lab 08\PSPICE-PSpiceFiles\SCHEMATIC1\HP_Filter.sim ] 
+
+
+ ****     JOB STATISTICS SUMMARY
+
+
+******************************************************************************
+
+
+
+  Total job time (using Solver 1)   =         .30
+
